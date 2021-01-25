@@ -1,0 +1,26 @@
+version: "3.9"
+
+services: 
+  fileSystem:
+    image: donsagiv/personal_projects:fileSystemManager
+    restart: always
+    networks:
+      fileSystemNetwork: { }
+    ports:
+      - 22:22
+      - 80:80
+      - 137:137
+      - 138:138
+      - 139:139
+      - 445:44
+    
+networks:
+  fileSystemNetwork:
+    name: home-lan
+    driver: macvlan
+    driver_opts:
+      parent: enp37s0
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24
+          gateway: 192.168.1.1

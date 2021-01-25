@@ -1,0 +1,21 @@
+# docker build -f ./DockerFile -t donsagiv/personal_projects:fileSystemManager .
+
+FROM ubuntu
+LABEL author="Ari Sagiv"
+
+EXPOSE 22 80 137/udp 138/udp 139 445
+
+RUN mkdir /init
+COPY /init.sh /init/init.sh
+RUN useradd -rm -d /home/ubuntu -s /bin/bash -g root -G sudo -u 1000 dcontainer 
+RUN echo 'dcontainer:mypassword' | chpasswd
+RUN mkdir /fileSystemDir
+RUN chmod 0777 /fileSystemDir
+RUN apt update
+RUN apt install openssh-server sudo samba -y
+RUN service ssh start
+RUN rm /etc/samba/smb.conf
+COPY /smb.conf /etc/samba/smb.conf
+RUN (echo mypassword; echo mypassword) | smbpasswd -a dcontainer
+
+ENTRYPOINT ["/init/init.sh"]
